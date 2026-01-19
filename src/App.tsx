@@ -379,6 +379,24 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      const navEntry = performance.getEntriesByType(
+        'navigation',
+      )[0] as PerformanceNavigationTiming | undefined
+      const isBackForward =
+        event.persisted ||
+        navEntry?.type === 'back_forward' ||
+        (performance as Performance & { navigation?: { type: number } })
+          .navigation?.type === 2
+      if (isBackForward) {
+        window.location.reload()
+      }
+    }
+    window.addEventListener('pageshow', handlePageShow)
+    return () => window.removeEventListener('pageshow', handlePageShow)
+  }, [])
+
+  useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) {
         return
