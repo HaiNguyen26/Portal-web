@@ -18,6 +18,19 @@ body {
   min-height: 100vh;
 }
 
+.fade-step {
+  opacity: 0;
+  transform: translateX(16px);
+  animation: fade-slide 600ms ease forwards;
+}
+
+@keyframes fade-slide {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .app-card {
   position: relative;
   overflow: hidden;
