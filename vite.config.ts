@@ -5,6 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/portal-web-rmg/',
+  build: {
+    outDir: process.env.VITE_OUT_DIR || 'dist',
+    emptyOutDir: true,
+  },
   server: {
     port: 5174,
     strictPort: true,
