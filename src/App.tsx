@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type React from 'react'
 
 type AppStatus = 'active' | 'disabled'
 
@@ -9,7 +10,7 @@ type PortalApp = {
   keywords: string[]
   status: AppStatus
   href: string
-  icon: (className: string) => JSX.Element
+  icon: (className: string) => React.ReactElement
   iconBg: string
   iconColor: string
 }
