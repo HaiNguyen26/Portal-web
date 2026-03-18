@@ -14,6 +14,7 @@ type PortalApp = {
   icon: (className: string) => React.ReactElement
   iconBg: string
   iconColor: string
+  comingSoonDate?: string
 }
 
 const iconUsers = (className: string) => (
@@ -175,6 +176,18 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
         icon: iconUsers,
         iconBg: 'bg-rose-100',
         iconColor: 'text-rose-600',
+      },
+      {
+        id: 'hrm-v2',
+        name: 'HRM 2.0',
+        description: 'Phiên bản mới với giao diện và tính năng nâng cấp.',
+        keywords: ['nhan su', 'nhansu', 'luong', 'hr', 'hrm', 'nhan vien', 'hrm 2', 'hrm v2'],
+        status: 'disabled',
+        href: '#hrm-v2',
+        icon: iconUsers,
+        iconBg: 'bg-rose-100',
+        iconColor: 'text-rose-600',
+        comingSoonDate: '01.04.2026',
       },
       {
         id: 'procurement',
@@ -673,7 +686,7 @@ function App() {
                           </span>
                           {app.status === 'disabled' && (
                             <span className="mt-2 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
-                              Coming soon
+                              {app.comingSoonDate ? `Coming soon ${app.comingSoonDate}` : 'Coming soon'}
                             </span>
                           )}
                           <span className="pointer-events-none absolute -top-9 left-1/2 w-max -translate-x-1/2 rounded-full bg-slate-900 px-3 py-1 text-[11px] text-white opacity-0 shadow-lg transition group-hover:opacity-100">
@@ -765,7 +778,7 @@ function App() {
                           </span>
                           {app.status === 'disabled' && (
                             <span className="mt-2 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
-                              Coming soon
+                              {app.comingSoonDate ? `Coming soon ${app.comingSoonDate}` : 'Coming soon'}
                             </span>
                           )}
                           <span className="pointer-events-none absolute -top-9 left-1/2 w-max -translate-x-1/2 rounded-full bg-slate-900 px-3 py-1 text-[11px] text-white opacity-0 shadow-lg transition group-hover:opacity-100">
