@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/portal-web-rmg/',
   build: {
-    outDir: process.env.VITE_OUT_DIR || 'dist',
+    outDir: process.env.VITE_OUT_DIR || 'dist', // production: VITE_OUT_DIR=/var/www/web_portal/portal-web-rmg
     emptyOutDir: true,
     rollupOptions: {
       output: {
