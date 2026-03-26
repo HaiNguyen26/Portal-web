@@ -15,6 +15,7 @@ type PortalApp = {
   iconBg: string
   iconColor: string
   comingSoonDate?: string
+  isNew?: boolean
 }
 
 const iconUsers = (className: string) => (
@@ -182,12 +183,12 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
         name: 'HRM 2.0',
         description: 'Phiên bản mới với giao diện và tính năng nâng cấp.',
         keywords: ['nhan su', 'nhansu', 'luong', 'hr', 'hrm', 'nhan vien', 'hrm 2', 'hrm v2'],
-        status: 'disabled',
-        href: '#hrm-v2',
+        status: 'active',
+        href: 'http://27.71.16.15/hrm-ver-2/login',
         icon: iconUsers,
         iconBg: 'bg-rose-100',
         iconColor: 'text-rose-600',
-        comingSoonDate: '01.04.2026',
+        isNew: true,
       },
       {
         id: 'procurement',
@@ -673,6 +674,11 @@ function App() {
                               Online
                             </span>
                           )}
+                          {app.isNew && (
+                            <span className="absolute left-4 top-4 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white animate-pulse">
+                              NEW
+                            </span>
+                          )}
                           <span
                             className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 ${app.iconBg} ${app.iconColor} group-hover:scale-125 group-hover:-rotate-6`}
                           >
@@ -763,6 +769,11 @@ function App() {
                                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                               </span>
                               Online
+                            </span>
+                          )}
+                          {app.isNew && (
+                            <span className="absolute left-4 top-4 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white animate-pulse">
+                              NEW
                             </span>
                           )}
                           <span
