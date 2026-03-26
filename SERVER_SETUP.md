@@ -1,32 +1,62 @@
-# Portal Web RMG - Server Setup
+# RMG Web Portal – Server Setup & Deployment Guide
 
-## Thông tin triển khai
-| App | URL | Webroot | API Backend |
-|---|---|---|---|
-| Portal Web | `/portal-web-rmg/` | `/var/www/web_portal/portal-web-rmg/` | — |
-| Asset RMG | `/asset_rmg/` | `/var/www/asset-rmg/frontend/dist/` | `localhost:4001` |
-| Meals RMG | `/meals-rmg/` | `/var/www/meals-rmg/frontend/dist/` | `localhost:3002` |
-| HRM | `/hr/` | `/var/www/hr-management/frontend/build/` | `localhost:3000` |
-| IT Tracking API | `/api/` | — | `localhost:4000` |
+> Server: `27.71.16.15` · Nginx · Ubuntu  
+> Repo Portal: https://github.com/HaiNguyen26/Portal-web.git  
+> Webroot gốc: `/var/www/web_portal/`  
+> Nginx config: `/etc/nginx/sites-enabled/web_portal`
 
 ---
 
-## MIGRATION: Chuyển config từ it-request-tracking → web_portal
+## 1. Danh sách ứng dụng hiện tại
 
-### Bước 1 – Copy portal-web-rmg sang webroot mới
-```bash
-sudo cp -r /var/www/it-request-tracking/webapp/dist/portal-web-rmg/. /var/www/web_portal/portal-web-rmg/
+| App | URL Path | Webroot (Frontend) | API Backend | Port |
+|---|---|---|---|---|
+| **Portal Web** | `/portal-web-rmg/` | `/var/www/web_portal/portal-web-rmg/` | — | — |
+| **Quản Lý Tài Sản** | `/asset_rmg/` | `/var/www/asset-rmg/frontend/dist/` | `localhost` | `4001` |
+| **Đăng Ký Suất Ăn** | `/meals-rmg/` | `/var/www/meals-rmg/frontend/dist/` | `localhost` | `3002` |
+| **HRM** | `/hr/` | `/var/www/hr-management/frontend/build/` | `localhost` | `3000` |
+| **IT Tracking API** | `/api/` | — | `localhost` | `4000` |
+
+---
+
+## 2. Cấu trúc thư mục server
+
 ```
-> `meals-rmg`, `asset_rmg`, `hr` giữ nguyên đường dẫn hiện tại, không cần copy.
+/var/www/
+├── web_portal/                        ← webroot chính của nginx
+│   ├── portal-web-rmg/                ← build output của repo này
+│   ├── meals-rmg  → symlink           → /var/www/meals-rmg/frontend/dist/
+│   ├── asset_rmg  → symlink           → /var/www/asset-rmg/frontend/dist/
+│   └── hr         → symlink           → /var/www/hr-management/frontend/build/
+│
+├── meals-rmg/
+│   ├── frontend/dist/                 ← React build
+│   └── backend/                       ← Node.js API (port 3002)
+│
+├── asset-rmg/
+│   ├── frontend/dist/                 ← React build
+│   └── backend/                       ← Node.js API (port 4001)
+│
+├── hr-management/
+│   ├── frontend/build/                ← React build
+│   └── backend/                       ← Node.js API (port 3000)
+│
+└── it-request-tracking/               ← IT Tracking app cũ (API port 4000)
+    └── webapp/dist/portal-web-rmg/    ← (cũ, không còn dùng)
 
-### Bước 2 – Tạo file nginx config mới
-```bash
-sudo nano /etc/nginx/sites-enabled/web_portal
+/root/Portal-web/                      ← source code repo Portal
 ```
 
-Dán toàn bộ nội dung sau vào file:
+---
 
-```nginx
+## 3. Nginx config đầy đủ
+
+File: `/etc/nginx/sites-enabled/web_portal`
+
+Để ghi lại file config (thay thế hoàn toàn), chạy lệnh sau trên server:
+
+```bash
+sudo tee /etc/nginx/sites-enabled/web_portal > /dev/null << 'NGINX_EOF'
 server {
     listen 80;
     server_name 27.71.16.15;
@@ -43,7 +73,7 @@ server {
     gzip_types text/plain text/css text/xml text/javascript
                application/x-javascript application/xml+rss application/json;
 
-    # ── Prevent caching HTML ──────────────────────────────────
+    # ── Không cache HTML (tự load version mới) ───────────────
     location ~* \.(html)$ {
         add_header Cache-Control "no-cache, no-store, must-revalidate";
         add_header Pragma "no-cache";
@@ -162,29 +192,80 @@ server {
         add_header Cache-Control "public, max-age=3600";
     }
 }
+NGINX_EOF
 ```
 
-### Bước 3 – Xóa (hoặc disable) config cũ
-```bash
-sudo rm /etc/nginx/sites-enabled/it-request-tracking
-```
-
-### Bước 4 – Test và reload nginx
+Sau đó test và reload:
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### Bước 5 – Kiểm tra nhanh
+---
+
+## 4. Triển khai app mới (checklist)
+
+Khi thêm một web app mới vào portal, thực hiện theo thứ tự:
+
+### Bước 1 – Đăng ký app trong Portal (`src/App.tsx`)
+Thêm entry vào `portalGroups` với `status: 'active'` và đúng `href`.
+
+### Bước 2 – Clone source code lên server
 ```bash
-curl -I http://27.71.16.15/portal-web-rmg/
-curl -I http://27.71.16.15/meals-rmg/
-curl -I http://27.71.16.15/asset_rmg/
-curl -I http://27.71.16.15/hr/
+git clone <repo-url> /var/www/<ten-app>/
+cd /var/www/<ten-app>
+```
+
+### Bước 3 – Build frontend
+```bash
+# React / Vite
+cd /var/www/<ten-app>/frontend
+npm install
+npm run build
+# Output thường ở: dist/ hoặc build/
+```
+
+### Bước 4 – Tạo symlink vào web_portal (nếu cần fallback SPA)
+```bash
+sudo ln -sfn /var/www/<ten-app>/frontend/dist /var/www/web_portal/<url-path>
+```
+> Bắt buộc nếu dùng `try_files` với SPA routing. Không cần nếu chỉ serve file tĩnh đơn giản.
+
+### Bước 5 – Thêm block nginx vào config
+Mở file config và thêm vào đúng vị trí (API trước, Frontend sau):
+
+```nginx
+# ── <Tên App> – Backend API ──────────────────────────────────
+location /<url-path>/api/ {
+    proxy_pass http://127.0.0.1:<PORT>/;
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade    $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+
+# ── <Tên App> – Frontend ─────────────────────────────────────
+location /<url-path>/ {
+    alias /var/www/<ten-app>/frontend/dist/;
+    try_files $uri $uri/ /<url-path>/index.html;
+}
+```
+
+### Bước 6 – Reload nginx
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### Bước 7 – Kiểm tra
+```bash
+curl -I http://27.71.16.15/<url-path>/
 ```
 
 ---
 
-## Cập nhật code Portal sau khi migration
+## 5. Cập nhật Portal (thay đổi code)
+
 ```bash
 cd /root/Portal-web
 git pull
@@ -192,11 +273,50 @@ npm install
 VITE_OUT_DIR=/var/www/web_portal/portal-web-rmg npm run build
 ```
 
-## Build lần đầu / build thủ công
+---
+
+## 6. Cài đặt Portal lần đầu trên server mới
+
 ```bash
+git clone https://github.com/HaiNguyen26/Portal-web.git /root/Portal-web
 cd /root/Portal-web
-git clone https://github.com/HaiNguyen26/Portal-web.git .
 npm install
+mkdir -p /var/www/web_portal/portal-web-rmg
 VITE_OUT_DIR=/var/www/web_portal/portal-web-rmg npm run build
 ```
 
+---
+
+## 7. Xem logs & debug
+
+```bash
+# Nginx error log
+sudo tail -50 /var/log/nginx/web-portal-error.log
+
+# Nginx access log
+sudo tail -50 /var/log/nginx/web-portal-access.log
+
+# Test config nginx
+sudo nginx -t
+
+# Reload nginx
+sudo systemctl reload nginx
+
+# Xem trạng thái nginx
+sudo systemctl status nginx
+```
+
+---
+
+## 8. Quản lý symlink
+
+```bash
+# Xem toàn bộ symlink trong web_portal
+ls -la /var/www/web_portal/
+
+# Tạo/cập nhật symlink
+sudo ln -sfn /var/www/<ten-app>/frontend/dist /var/www/web_portal/<url-path>
+
+# Xóa symlink (không xóa file gốc)
+sudo rm /var/www/web_portal/<url-path>
+```
