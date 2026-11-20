@@ -234,7 +234,7 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
           'nhap xuat',
         ],
         status: 'active',
-        href: 'https://27.71.16.15/login',
+        href: 'https://27.71.16.15/xp-power-rmg/login',
         icon: iconWarehouse,
         iconBg: 'bg-orange-100',
         iconColor: 'text-orange-600',
