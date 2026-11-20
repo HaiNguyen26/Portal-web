@@ -151,6 +151,22 @@ const iconCalendar = (className: string) => (
   </svg>
 )
 
+const iconWarehouse = (className: string) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z" />
+    <path d="M9 21v-7h6v7" />
+  </svg>
+)
+
 const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
   {
     id: 'core',
@@ -162,7 +178,7 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
         description: 'Đặt suất ăn hàng ngày và theo dõi lịch giao.',
         keywords: ['com', 'meal', 'suat an', 'suat', 'an', 'canteen'],
         status: 'active',
-        href: 'http://27.71.16.15/meals-rmg/login',
+        href: 'https://27.71.16.15/meals-rmg/login',
         icon: iconMeal,
         iconBg: 'bg-amber-100',
         iconColor: 'text-amber-600',
@@ -173,7 +189,7 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
         description: 'Phiên bản mới với giao diện và tính năng nâng cấp.',
         keywords: ['nhan su', 'nhansu', 'luong', 'hr', 'hrm', 'nhan vien', 'hrm 2', 'hrm v2'],
         status: 'active',
-        href: 'http://27.71.16.15/hrm-ver-2/login',
+        href: 'https://27.71.16.15/hrm-ver-2/login',
         icon: iconUsers,
         iconBg: 'bg-rose-100',
         iconColor: 'text-rose-600',
@@ -185,7 +201,7 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
         description: 'Yêu cầu mua sắm, duyệt đơn và theo dõi vật tư.',
         keywords: ['mua hang', 'mua sam', 'vat tu', 'procurement', 'smart buyer', 'po', 'pr', 'purchase'],
         status: 'active',
-        href: 'http://27.71.16.15/smart-buyer/login',
+        href: 'https://27.71.16.15/smart-buyer/login',
         icon: iconCart,
         iconBg: 'bg-sky-100',
         iconColor: 'text-sky-600',
@@ -197,10 +213,32 @@ const portalGroups: { id: string; title: string; apps: PortalApp[] }[] = [
         description: 'Theo dõi tài sản và cấp phát thiết bị.',
         keywords: ['tai san', 'asset', 'equipment', 'cap phat'],
         status: 'active',
-        href: 'http://27.71.16.15/asset_rmg/login',
+        href: 'https://27.71.16.15/asset_rmg/login',
         icon: iconWallet,
         iconBg: 'bg-emerald-100',
         iconColor: 'text-emerald-600',
+      },
+      {
+        id: 'warehouse-rmg-xp',
+        name: 'Kho Lưu Trữ RMG x XP Power',
+        description: 'Quản lý kho lưu trữ hàng hóa RMG và XP Power.',
+        keywords: [
+          'kho',
+          'luu tru',
+          'warehouse',
+          'storage',
+          'rmg',
+          'xp',
+          'xp power',
+          'ton kho',
+          'nhap xuat',
+        ],
+        status: 'active',
+        href: 'https://27.71.16.15/login',
+        icon: iconWarehouse,
+        iconBg: 'bg-orange-100',
+        iconColor: 'text-orange-600',
+        isNew: true,
       },
       {
         id: 'calendar',
